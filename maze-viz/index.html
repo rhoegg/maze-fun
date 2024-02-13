@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="https://pixijs.download/release/pixi.js"></script>
+  </head>
+  <body>
+    <script>
+      let app = new PIXI.Application({ width: 640, height: 640 });
+      document.body.appendChild(app.view);
+
+      let obj = new PIXI.Graphics();
+      app.stage.addChild(obj);
+
+      function drawSeg(obj, p1, p2) {
+        if (p1.x > p2.x || p1.y > p2.y) {
+          drawSeg(obj, p2, p1);
+        } else {
+          let w = (p2.x - p1.x) * 30 + 18;
+          let h = (p2.y - p1.y) * 30 + 18;
+          obj.drawRect(p1.x * 30 - 18, p1.y * 30 - 18, w, h);
+        }
+      }
+
+      fetch('./simplemaze1.json')
+        .then((response) => response.json())
+        .then((json) => {
+
+          obj.beginFill(0xffffff);
+          let elapsed = 0.0;
+          app.ticker.add((delta) => {
+            elapsed += delta;
+            let count = elapsed / 2;
+            json.slice(0, count).map((edge) => {
+              drawSeg(obj, edge.p1, edge.p2);
+            });
+          });
+
+          // obj.beginFill(0xff0000);
+          // json.map((edge) => {
+          //   obj.drawCircle(edge.p1.x * 30, edge.p1.y * 30, 6);
+          //   obj.drawCircle(edge.p2.x * 30, edge.p2.y * 30, 6);
+          // })
+        })
+    </script>
+  </body>
+</html>
